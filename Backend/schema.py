@@ -4,16 +4,17 @@ from datetime import datetime
 from datetime import timedelta
 
 
-
 ################################################################
 ################################    Notification
 ################################################################
 
+
 class NotificationModel(BaseModel):
-    id:int
-    date:datetime
-    text:str
-    related_content_id:int
+    id: int
+    date: datetime
+    text: str
+    related_content_id: int
+
 
 ################################################################
 ################################################################
@@ -21,31 +22,38 @@ class NotificationModel(BaseModel):
 ################################################################
 ################################################################
 
+
 class ContentModel(BaseModel):
-    id:int
-    text:str
-    title:str
-    publishdate:datetime
-    channel_id:int
-    publisherUsername:str
+    id: int
+    text: str
+    title: str
+    publishdate: datetime
+    channel_id: int
+    publisherUsername: str
+
 
 ################################
 class homeworkModel(ContentModel):
     pass
 
+
 class ArticleModel(ContentModel):
-    video:str
-    photo:str
+    video: str
+    photo: str
+
 
 class QuizModel(ContentModel):
-    duration:timedelta
-    starting_date:datetime
+    duration: timedelta
+    starting_date: datetime
+
 
 class ProblemSetModel(ContentModel):
-    deadline:datetime
+    deadline: datetime
 
-class PollModel(ContentModel ):
+
+class PollModel(ContentModel):
     pass
+
 
 ###############################
 ################################################################
@@ -54,32 +62,35 @@ class PollModel(ContentModel ):
 ################################################################
 ################################################################
 
+
 class ChannelModel(BaseModel):
-    id:int
-    type:str
-    is_active:bool
-    description:str
-    creationDate:datetime
-    Rating:float
-    title:str
-    code:str
+    id: int
+    type: str
+    is_active: bool
+    description: str
+    creationDate: datetime
+    Rating: float
+    title: str
+    code: str
+
 
 class QuestionModel(BaseModel):
-    id:int
-    text:str
-    answer:str
-    channel_id:int
+    id: int
+    text: str
+    answer: str
+    channel_id: int
+
 
 class QuestionChoicesModel(BaseModel):
-    question_id:int
-    choice:str
+    question_id: int
+    choice: str
+
 
 class DiscussionModel(BaseModel):
-    channel_id:int
-    Discussion_id:int
-    text:int
-    publish_date:datetime
-
+    channel_id: int
+    Discussion_id: int
+    text: int
+    publish_date: datetime
 
 
 ################################################################
@@ -88,25 +99,32 @@ class DiscussionModel(BaseModel):
 ################################################################
 ################################################################
 
+
 class UserModel(BaseModel):
-    username : str
+    username: str
     email: EmailStr
     password: str
-    is_active:bool
-    photo:str
-    DOB:datetime
-    nickname:str
-    phonenumber:str
+    is_active: bool
+    photo: str
+    DOB: datetime
+    nickname: str
+    phonenumber: str
 
+    class Config:
+        from_attribute = True
+        populate_by_name = True
 
 
 class StudentModel(UserModel):
     pass
 
-class PublisherModel(UserModel):
-    job: str
-    linkedin_url:str
 
+class PublisherModel_Another_Person(UserModel):
+    job: str
+    linkedin_url: str
+    is_active: str = Field(exclude=True, title="is_active")
+    password: str = Field(exclude=True, title="password")
+    DOB: datetime = Field(exclude=True, title="DOB")
 
 
 ################################################################
@@ -115,96 +133,119 @@ class PublisherModel(UserModel):
 ################################################################
 ################################################################
 
+
 class AdminModel(BaseModel):
-    username:str
-    password:str
-    email:EmailStr
-    DOB:datetime
-    phonenumber:str
-
-
+    username: str
+    password: str
+    email: EmailStr
+    DOB: datetime
+    phonenumber: str
 
 
 ################################################################
 
 ################################################################
 
+
 ################################################################
-  #                     MultiVariables
+#                     MultiVariables
 class PollChoice_MultiModel(BaseModel):
-    poll_id:int
-    choice:str
+    poll_id: int
+    choice: str
+
 
 class Keywords_MluitModel(BaseModel):
-    channel_id:int
-    keyword:str
-
+    channel_id: int
+    keyword: str
 
 
 ################################################################
-  #                     RELATIONS
+#                     RELATIONS
 class QuizQuestionModel(BaseModel):
-    question_id:int
-    quiz_id:int
+    question_id: int
+    quiz_id: int
+
 
 class VoteModel(BaseModel):
-    studentusername:str
-    poll_id:int
-    choice:str
+    studentusername: str
+    poll_id: int
+    choice: str
+
 
 class HomeWorkQuestion_RelationModel(BaseModel):
-    question_id:int
-    Homework_id:int
+    question_id: int
+    Homework_id: int
+
 
 class SolveQuiz_RelationModel(BaseModel):
-    studentusername:str
-    content_id:int
-    grade:int
+    studentusername: str
+    content_id: int
+    grade: int
+
 
 class SolveHomeWork_RelationModel(BaseModel):
-    studentusername:str
-    homework_id:int
+    studentusername: str
+    homework_id: int
+
 
 class SolveProblemSet_RelationModel(BaseModel):
-    studentusername:str
-    content_id:int
-    grade:int
+    studentusername: str
+    content_id: int
+    grade: int
+
 
 class Read_RelationModel(BaseModel):
-    studentusername:str
-    article_id:int
+    studentusername: str
+    article_id: int
+
 
 class ProblemSetQuestion_RelationModel(BaseModel):
-    question_id:int
-    problemset_id:int
+    question_id: int
+    problemset_id: int
 
 
 class AdminUserBan_RelationalModel(BaseModel):
-    adminusername:str
-    username:str
+    adminusername: str
+    username: str
+
 
 class AdminChannelBan_RelationModel(BaseModel):
-    adminusername:str
-    channel_id:int
+    adminusername: str
+    channel_id: int
+
 
 class PublisherManageChannel_RelationModel(BaseModel):
-    publisherusername:str
-    chanell_id:int
+    publisherusername: str
+    chanell_id: int
 
 
 class GetNotification_RelationalModel(BaseModel):
-    studentusername:str
-    notification_id:int
-    seen:bool
+    studentusername: str
+    notification_id: int
+    seen: bool
 
 
 class DiscussionArticle_RelationModel(BaseModel):
-    Discussion_id:int
-    article_id:int
+    Discussion_id: int
+    article_id: int
+
 
 class JoinChannel_RelationModel(BaseModel):
-    studentusername:str
-    channel_id:int
-    requestStatus:bool
+    studentusername: str
+    channel_id: int
+    requestStatus: bool
 
 
+class TokenModel(BaseModel):
+    access_token: str
+    token_type: str
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
+
+## publisher models
+
+
+########

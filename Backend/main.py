@@ -1,8 +1,6 @@
 from fastapi import FastAPI
+from users.publisher import publisher
 
+program = FastAPI(debug=True)
 
-program = FastAPI()
-
-@program.get("/program")
-def get():
-    return {"Message":"Hi"}
+program.include_router(publisher.router)

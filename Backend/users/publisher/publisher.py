@@ -1,6 +1,6 @@
 import DatabaseConnection
-from DatabaseConnection import get_conn, get_db, release_conn
-from .constants import PasswordInteraction
+from DatabaseConnection import get_conn, release_conn
+from auth.auth import PasswordInteraction
 import query
 from query import NonQuery, Query
 from fastapi import (
@@ -31,6 +31,8 @@ async def create_publisher(
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
+    linked_url: str = Form(...),
+    job: str = Form(...),
     DOB: date = Form(...),
     nickname: str = Form(...),
     phonenumber: str = Form(...),
@@ -87,10 +89,16 @@ async def create_publisher(
                     phonenumber,
                 ),
             )
+            query = "INSERT INTO publisher (username,linked_url,job) VALUES (%s,%s,%s)"
+
+            cursor.execute(query, (username, linked_url, job))
+
             db_conn.commit()
         except Exception as e:
+            release_conn(db_conn)
             return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e)
         else:
+            release_conn(db_conn)
             return HTTPException(
                 status_code=status.HTTP_201_CREATED,
                 detail=f"Succes username of {username} is created",
@@ -115,3 +123,31 @@ async def get_photo(filename: str = Form(...)):
         return Response(status_code=404, content="Photo not found")
     except Exception as e:
         return Response(status_code=500, content=f"Error retrieving photo: {e}")
+
+
+@router.get("/publisher/{username}", response_model=PublisherResponseModel)
+def get_publisher(
+    username: str, db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn)
+):
+    with db_conn.cursor(dictionary=True) as cursor:
+        query = "SELECT user.username,email,photo,DOB,nickname,phonenumber,linked_url,job From user,publisher WHERE publisher.username = user.username AND publisher.username = %s"
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        release_conn(db_conn)
+        print(result)
+        print(result["username"])
+        if result:
+            output = PublisherResponseModel(
+                username=result["username"],
+                email=result["email"],
+                nickname=result["nickname"],
+                phonenumber=result["phonenumber"],
+                job=result["job"],
+                linkedin_url=result["linked_url"],
+                photo=result["photo"],
+            )
+            return output
+        else:
+            return HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Username Not Found"
+            )

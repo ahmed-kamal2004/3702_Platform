@@ -22,19 +22,7 @@ class PConstant:
         EXPIRETIME_MIN = 15
         ALGORITHM = "HS256"
         ## here I should pass the endpoint of logging
-        OAuth2_schema = OAuth2PasswordBearer(tokenUrl="/login")
-
-
-class PasswordInteraction:
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-    @staticmethod
-    def hash_password(password: str) -> str:
-        return PasswordInteraction.pwd_context.hash(password)
-
-    @staticmethod
-    def verify_password(password: str, hashed_password: str) -> bool:
-        return PasswordInteraction.pwd_context.verify(password, hashed_password)
+        OAuth2_schema = OAuth2PasswordBearer(tokenUrl="/login/pub")
 
 
 class TokenInteraction:

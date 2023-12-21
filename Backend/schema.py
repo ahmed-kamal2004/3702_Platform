@@ -103,9 +103,6 @@ class DiscussionModel(BaseModel):
 class UserModel(BaseModel):
     username: str
     email: EmailStr
-    password: str
-    is_active: bool
-    DOB: datetime
     nickname: str
     phonenumber: str
 

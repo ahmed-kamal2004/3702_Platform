@@ -22,9 +22,6 @@ class PublisherTokenDataModel(TokenModel):
 class PublisherResponseModel(PublisherModel):
     job: str
     linkedin_url: str
-    is_active: bool = Field(exclude=True, title="is_active")
-    password: str = Field(exclude=True, title="password")
-    DOB: datetime = Field(exclude=True, title="DOB")
     photo: str
 
     class Config:

@@ -105,7 +105,6 @@ class UserModel(BaseModel):
     email: EmailStr
     password: str
     is_active: bool
-    photo: str
     DOB: datetime
     nickname: str
     phonenumber: str
@@ -119,12 +118,9 @@ class StudentModel(UserModel):
     pass
 
 
-class PublisherModel_Another_Person(UserModel):
+class PublisherModel(UserModel):
     job: str
     linkedin_url: str
-    is_active: str = Field(exclude=True, title="is_active")
-    password: str = Field(exclude=True, title="password")
-    DOB: datetime = Field(exclude=True, title="DOB")
 
 
 ################################################################

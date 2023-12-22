@@ -2,8 +2,20 @@ from fastapi import FastAPI
 from users.publisher import publisher
 from users.student import student
 from auth import auth
+from fastapi.middleware.cors import CORSMiddleware
 
 program = FastAPI(debug=True)
+
+# Allow all origins
+origins = ["*"]
+
+program.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 program.include_router(publisher.router)

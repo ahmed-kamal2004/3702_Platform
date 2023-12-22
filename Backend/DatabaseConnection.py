@@ -11,7 +11,7 @@ while True:
             host="localhost",
             database="_3702_platform",
             user="root",
-            password="9341",
+            password="Ahmed.ahmed033",
         )
     except Exception as e:
         print(e)

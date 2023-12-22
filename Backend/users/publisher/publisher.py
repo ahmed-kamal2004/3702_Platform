@@ -38,7 +38,7 @@ async def sign_up(
     DOB: date = Form(...),
     nickname: str = Form(...),
     phonenumber: str = Form(...),
-    photo: UploadFile = Form(...),
+   # photo: UploadFile = Form(...),
     db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
 ):
     print(username, email, password, DOB, nickname, phonenumber)
@@ -62,18 +62,18 @@ async def sign_up(
                 status_code=status.HTTP_409_CONFLICT, detail="Email in Use"
             )
 
-        file_path = Path("uploads/photos/profile_picture")  # Adjust base path as needed
-        file_path.mkdir(parents=True, exist_ok=True)  # Create directories if needed
+        # file_path = Path("uploads/photos/profile_picture")  # Adjust base path as needed
+        # file_path.mkdir(parents=True, exist_ok=True)  # Create directories if needed
 
-        # Generate unique filename with extension
-        filename = f"{username}.{photo.filename.split('.')[-1]}"
-        print(filename)
-        file_path = file_path / filename
+        # # Generate unique filename with extension
+        # filename = f"{username}.{photo.filename.split('.')[-1]}"
+        # print(filename)
+        # file_path = file_path / filename
 
-        # Read file content and save to disk
-        async with aiofiles.open(file_path, "wb") as f:
-            while content := await photo.read(1024):  # async read chunk
-                await f.write(content)
+        # # Read file content and save to disk
+        # async with aiofiles.open(file_path, "wb") as f:
+        #     while content := await photo.read(1024):  # async read chunk
+        #         await f.write(content)
 
         try:
             query = "INSERT INTO user (username,email,password,is_active,photo,DOB,nickname,phonenumber)VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"
@@ -84,7 +84,7 @@ async def sign_up(
                     email,
                     PasswordInteraction.hash_password(password),
                     True,
-                    str(filename),
+                   "",
                     DOB,
                     nickname,
                     phonenumber,

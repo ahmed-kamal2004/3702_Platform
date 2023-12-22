@@ -12,13 +12,15 @@ from fastapi import (
     File,
     Form,
     Response,
+    Request,
 )
 from typing import Annotated
-from .pubSchemas import UserModel, PublisherResponseModel, PublisherSignUpModel
+from .pubSchemas import UserModel, PublisherResponseModel, ChannelCreatedModel
 from pathlib import Path
 from datetime import date, datetime
 import imghdr
 import aiofiles
+from .constants import TokenInteraction
 
 router = APIRouter(prefix="/pub", tags=["Publishers"])
 
@@ -27,7 +29,7 @@ router = APIRouter(prefix="/pub", tags=["Publishers"])
     "/pub-sign-up/",
     status_code=status.HTTP_201_CREATED,
 )
-async def create_publisher(
+async def sign_up(
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
@@ -56,7 +58,6 @@ async def create_publisher(
         cursor.execute(query, (email,))
         result = cursor.fetchone()
         if result:
-            release_conn(db_conn)
             return HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="Email in Use"
             )
@@ -94,6 +95,7 @@ async def create_publisher(
             cursor.execute(query, (username, linked_url, job))
 
             db_conn.commit()
+            release_conn(db_conn)
         except Exception as e:
             release_conn(db_conn)
             return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e)
@@ -151,3 +153,127 @@ def get_publisher(
             return HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Username Not Found"
             )
+
+
+#######################################################################
+#        Publisher Interaction With channel
+#######################################################################
+
+
+@router.post("/create-channel", status_code=status.HTTP_201_CREATED)
+def create_channel(
+    username: str = Form(...),
+    channel_id: int = Form(...),
+    type: str = Form(...),
+    description: str = Form(...),
+    title: str = Form(...),
+    code: str = Form(...),
+    db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
+    user: str = Depends(
+        TokenInteraction.get_current_user,
+    ),
+):
+    if user != username:
+        return HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Login First"
+        )
+    with db_conn.cursor(dictionary=True) as cursor:
+        query = "SELECT * from publisher Where username =%s"
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+        if not result:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Login First"
+            )
+        else:
+            try:
+                type = 0 if type.lower().strip() == "public" else 1
+                query = "INSERT INTO channel (id, type, is_active, description,creationdate, rating, title, code) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                print(query)
+                ## code must be automatically generated
+                cursor.execute(
+                    query,
+                    (
+                        channel_id,
+                        type,
+                        True,
+                        description,
+                        date.today(),
+                        5,
+                        title,
+                        PasswordInteraction.hash_password(code),
+                    ),
+                )
+                print(cursor)
+                query = "INSERT INTO publisher_manage_channel (publisher_username,channel_id,state) VALUES(%s,%s,%s)"
+                cursor.execute(query, (username, channel_id, False))
+                db_conn.commit()
+                release_conn(db_conn)
+                model = ChannelCreatedModel(
+                    username=username,
+                    type=type,
+                    channel_id=channel_id,
+                    is_active=True,
+                    description=description,
+                    rating=5,
+                    title=title,
+                )
+                return model
+            except Exception as e:
+                return HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Code Error",
+                )
+
+
+@router.post("/join-channel")
+def join_channel(
+    username: str = Form(...),
+    channel_id: int = Form(...),
+    db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
+    user: str = Depends(
+        TokenInteraction.get_current_user,
+    ),
+):
+    ## first we check for authentication
+
+    if user != username:
+        return HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Login First"
+        )
+
+    ## second we check for a channel exists
+    with db_conn.cursor() as cursor:
+        query = "SELECT * FROM Channel Where id = %s"
+        cursor.execute(query, (channel_id,))
+        result = cursor.fetchone()
+
+        if not result:
+            ## means that the channel not exists
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Channel not found"
+            )
+
+        ## check if it is already operates the channel
+        query = "SELECT * FROM publisher_manage_channel WHERE channel_id = %s AND publisher_username = %s"
+        cursor.execute(query, (channel_id, user))
+        result = cursor.fetchone()
+        if result:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_204_NO_CONTENT,
+                detail="Already operates the channel",
+            )
+            return
+
+        query = "INSERT INTO publisher_manage_channel(publisher_username,channel_id) VALUES(%s,%s,%s)"
+        cursor.execute(query, (username, channel_id, 0))
+        db_conn.commit()
+        release_conn(db_conn)
+        return HTTPException(
+            status_code=status.HTTP_202_ACCEPTED,
+            detail=f"Publisher : {username} Joined Channel : {channel_id}",
+        )
+        return

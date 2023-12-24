@@ -9,7 +9,7 @@ while True:
             pool_name="pool",
             pool_size=30,
             host="localhost",
-            database="_3702_platform",
+            database="platform",
             user="root",
             password="9341",
         )

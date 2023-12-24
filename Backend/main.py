@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from users.publisher import publisher
 from users.student import student
+from channel import channel
 from auth import auth
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,3 +22,4 @@ program.add_middleware(
 program.include_router(publisher.router)
 program.include_router(student.router)
 program.include_router(auth.router)
+program.include_router(channel.router)

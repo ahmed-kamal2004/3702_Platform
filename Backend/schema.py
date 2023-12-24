@@ -4,6 +4,14 @@ from datetime import datetime
 from datetime import timedelta
 
 
+class PublisherOperatorModel(BaseModel):
+    nickname: str
+    username: str
+
+    class config:
+        from_attributes = True
+
+
 ################################################################
 ################################    Notification
 ################################################################
@@ -63,15 +71,17 @@ class PollModel(ContentModel):
 ################################################################
 
 
-class ChannelModel(BaseModel):
+class ChannelBaseModel(BaseModel):
     id: int
     type: str
-    is_active: bool
     description: str
-    creationDate: datetime
-    Rating: float
+    creationdate: datetime
+    rating: float
     title: str
-    code: str
+
+    class Config:
+        from_attribute = True
+        populate_by_name = True
 
 
 class QuestionModel(BaseModel):
@@ -111,13 +121,8 @@ class UserModel(BaseModel):
         populate_by_name = True
 
 
-class StudentModel(UserModel):
+class StudentModel(BaseModel):
     pass
-
-
-class PublisherModel(UserModel):
-    job: str
-    linkedin_url: str
 
 
 ################################################################

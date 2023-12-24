@@ -1,7 +1,7 @@
 from uuid import uuid4
 import schema
-from schema import TokenModel, UserModel, PublisherModel, BaseModel
-from pydantic import Field
+from schema import TokenModel, UserModel, BaseModel
+from pydantic import Field, EmailStr
 from datetime import datetime
 from fastapi import UploadFile, Form
 
@@ -20,19 +20,14 @@ class PublisherTokenDataModel(TokenModel):
 ### Publisher Response Models
 
 
-class PublisherResponseModel(PublisherModel):
-    job: str
-    linkedin_url: str
+class PublisherResponseModel(BaseModel):
     photo: str
-
-    class Config:
-        from_attribute = True
-        populate_by_name = True
-
-
-class PublisherSignUpModel(PublisherModel):
-    photo: UploadFile
-    is_active: bool = Field(exclude=True, title="is_active")
+    job: str
+    linked_url: str
+    username: str
+    email: EmailStr
+    nickname: str
+    phonenumber: str
 
     class Config:
         from_attribute = True

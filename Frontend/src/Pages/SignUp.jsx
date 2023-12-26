@@ -9,9 +9,10 @@ const SignUp = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [birthdate, setBirthdate] = useState('');
     const [linkedinUrl, setlinkedinUrl] = useState('');
-    const [Job, setJob] = useState('');
+    const [Job, setJob] = useState('Software Engineer');
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [errors, setErrors] = useState({});
+    const[valid,setValid]=useState(false)
     
 const jobOptions = [
     'Software Engineer',
@@ -57,14 +58,30 @@ const handleSubmit = (e) => {
 
     // Submit the form if there are no errors
     if (Object.keys(errors).length === 0) {
+      if(Type=="Student"){
       axios.post('http://127.0.0.1:8000/stu/stu-sign-up/', {
-        'username':username,'email':email,'password':password,'DOB':birthdate,'nickname':nickname,'phonenumber':phoneNumber
+        'username':username,'email':email,'password':password,'DOB':birthdate,'nickname':nickname,'phonenumber':phoneNumber,photo:profilePhoto
       })
       .then((response) => {
-        setValid(response.data.data)
+        console.log(response)
+      }, (error) => {
+       console.log(error.response);
+      });}
+      else{
+        // console.log({
+        //      'username':username,'email':email,'password':password,'DOB':birthdate,'nickname':nickname,'phonenumber':phoneNumber,"linked_url":linkedinUrl,"job":Job
+        //    })
+        axios.post('http://127.0.0.1:8000/pub/pub-sign-up/', 
+        {
+        'username':username,'email':email,'password':password,'DOB':birthdate,'nickname':nickname,'phonenumber':phoneNumber,"linked_url":linkedinUrl,"job":Job,photo:profilePhoto
+        }
+      )
+      .then((response) => {
+        console.log(response)
       }, (error) => {
        console.log(error.response);
       });
+      }
       };
   };
   const typeDetector=(e)=>{
@@ -186,7 +203,7 @@ const handleSubmit = (e) => {
         className={`w-full p-2 border ${
             errors.Job ? 'border-red-500' : 'border-gray-300'
         } rounded`}
-        onChange={(e)=>setJob(e.target.value)}
+        onChange={(e)=>{console.log(e)}}
         >
       {errors.Job && (
           <p className="text-red-500 text-sm mt-1">{errors.Job}</p>
@@ -228,9 +245,9 @@ const handleSubmit = (e) => {
             Birthdate
           </label>
           <input
-            type="date"
+            type="text"
             id="birthdate"
-            value={birthdate}
+            //value={birthdate}
             onChange={(e) => setBirthdate(e.target.value)}
             className={`w-full p-2 border ${
                 errors.birthdate ? 'border-red-500' : 'border-gray-300'
@@ -245,9 +262,8 @@ const handleSubmit = (e) => {
             Profile Photo URL
           </label>
           <input
-            type="file"
+            type="text"
             id="profilePhoto"
-            accept="image/*"
             onChange={(e) => setProfilePhoto(e.target.value)}
             className={`w-full p-2 border ${
                 errors.profilePhoto ? 'border-red-500' : 'border-gray-300'

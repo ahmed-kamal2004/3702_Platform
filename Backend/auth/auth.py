@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status,Request
 from fastapi.security import OAuth2PasswordRequestForm
 from DatabaseConnection import get_conn, PooledMySQLConnection, release_conn
 from passlib.context import CryptContext
@@ -22,13 +22,15 @@ class PasswordInteraction:
 
 
 @router.post("/pub")
-def publisher_login(
-    data: OAuth2PasswordRequestForm = Depends(),
+async def publisher_login(
+    # data: OAuth2PasswordRequestForm = Depends(),
+    request:Request,
     db_conn: PooledMySQLConnection = Depends(get_conn),
 ):
+    request_body=await request.json()
     with db_conn.cursor() as cursor:
-        username = data.username
-        password = data.password
+        username = request_body["username"]
+        password = request_body["password"]
 
         first_query = "SELECT username FROM user WHERE username = %s"
         cursor.execute(first_query, (username,))
@@ -63,13 +65,15 @@ def publisher_login(
 
 
 @router.post("/stu")
-def student_login(
-    data: OAuth2PasswordRequestForm = Depends(),
+async def student_login(
+    # data: OAuth2PasswordRequestForm = Depends(),
+    request:Request,
     db_conn: PooledMySQLConnection = Depends(get_conn),
 ):
+    request_body=await request.json()
     with db_conn.cursor() as cursor:
-        username = data.username
-        password = data.password
+        username = request_body["username"]
+        password = request_body["password"]
 
         first_query = "SELECT username FROM user WHERE username = %s"
         cursor.execute(first_query, (username,))

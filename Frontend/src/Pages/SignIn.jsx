@@ -27,24 +27,26 @@ const SignIn = () => {
       "password": password
     })
     .then((response) => {
-      setValid(response.data.data)
+      //setValid(response.data.data)
+      console.log(response.data);
     }, (error) => {
      console.log(error.response);
     });
     }  
-    }
     else{
       axios.post('http://127.0.0.1:8000/login/pub', {
       "username": username,
       "password": password
     })
     .then((response) => {
-      setValid(response.data.data)
+      //setValid(response.data.data)
+      console.log(response.data);
     }, (error) => {
      console.log(error.response);
     });
     }
     }
+  }
     return (
     <div className=" bg-amber-100 p-10 h-[100vh]">
         <div className="flex  flex-row  justify-between mb-12 min-w-full ">
@@ -103,7 +105,7 @@ const SignIn = () => {
           type="submit"
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded"
           >
-          Sign Up
+           {valid? "Succuessful Login":"Sign In"}
         </button>
               </form>
         </div>

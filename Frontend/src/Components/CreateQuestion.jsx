@@ -41,6 +41,9 @@ const CreateQuestion = () => {
 						name="Question"
 						placeholder="Enter the Question:"
 						className="  my-1 px-2 py-1 "
+						onChange={(e) => {
+							setHead(e.target.value);
+						  }}
 					/>
 					{error.Head && (
 						<p className="text-red-500 text-sm mt-1 text-center">

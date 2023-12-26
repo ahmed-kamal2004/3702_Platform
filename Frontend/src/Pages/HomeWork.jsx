@@ -7,11 +7,12 @@ import CreatePoll from '../Components/CreatePoll'
 import CreateQuestion from '../Components/CreateQuestion'
 import CreateArticle from '../Components/createArticle'
 import CreateDicussion from '../Components/CreateDicussion'
+import CreateChannel from '../Components/CreateChannel'
 const HomeWork = () => {
   return (
     <div className="bg-amber-100  ">
         <ChannelLayout/>
-        <CreatePoll/>
+        <CreateChannel/>
         {/* <CreateDicussion/> */}
           {/* <Poll Author={"Ahmed Mostafa"} Date={"20-2-2011"} text={"lk;jhgfdryetuiokjnm"}/> */}
         {/* <Question Qtext={'Hello,World'} choices={[1,2,3,4]} is_last={false}/> */}

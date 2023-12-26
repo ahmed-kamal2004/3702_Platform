@@ -8,7 +8,7 @@ const CreateArticle = () => {
 	const HandleSubmit = (e) => {
 	  const errors={};
     if(!Head) errors.Title="Title is required!"	
-    if(!Content) errors.Content="Content is required!"	
+    if(!Content) errors.Content="Article can't be empty!"	
     if(!Photo) errors.Photo="Photo is required!"	
     e.preventDefault();
 		seterror(errors)
@@ -45,6 +45,9 @@ const CreateArticle = () => {
 						name="Content"
 						placeholder="Enter the Content"
 						className="  my-1 px-2 py-1 "
+						onChange={(e) => {
+							setContent(e.target.value);
+						  }}
 					/>
         {error.Content&&<p className="text-red-500 text-sm mt-1 text-center">{error.Content}</p>}
 		  	</div>

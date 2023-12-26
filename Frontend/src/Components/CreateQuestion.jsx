@@ -153,7 +153,7 @@ const CreateQuestion = () => {
 					)}
 				</div>
 				<button className="border border-black rounded-xl w-48 my-6 px-4 py-2 hover:bg-black hover:text-white mx-auto">
-					Create Question
+					Create 
 				</button>
 			</form>
 		</div>

@@ -9,15 +9,18 @@ import CreateArticle from '../Components/createArticle'
 import CreateDicussion from '../Components/CreateDicussion'
 import CreateChannel from '../Components/CreateChannel'
 import CreateQuiz from '../Components/CreateQuiz'
+import CreatePS from '../Components/CreatePS'
+import CreateHW from '../Components/CreateHW'
+import Discussion from '../Components/Discussion'
 const HomeWork = () => {
   return (
     <div className="bg-amber-100  ">
         <ChannelLayout/>
-        <CreateQuiz/>
+        {/* <Article/> */}
         {/* <CreateDicussion/> */}
           {/* <Poll Author={"Ahmed Mostafa"} Date={"20-2-2011"} text={"lk;jhgfdryetuiokjnm"}/> */}
         {/* <Question Qtext={'Hello,World'} choices={[1,2,3,4]} is_last={false}/> */}
-        {/* <Article Author={'Ahmed Mostafa'} Date={'12/12/2021'} Title={'Hello,World'} text={`[Текст песни «Томас Шелби»]
+        <Discussion Author={'Ahmed Mostafa'} Date={'12/12/2021'} Title={'Hello,World'} text={`[Текст песни «Томас Шелби»]
 
 [Припев]
 Я как Томас Шелби всё с грустью так же шёл бы
@@ -82,7 +85,7 @@ Big Baby Tape
 Я как Томас Шелби, но с грустью так и шёл бы
 И пусть меня никто не нашёл бы
 Клянусь, мне так плевать на твои слова
-Сам по себе я`} img={"https://c4.wallpaperflare.com/wallpaper/189/144/893/cyber-science-fiction-digital-art-concept-art-cyberpunk-hd-wallpaper-preview.jpg"} Upvotes={10} Downvotes={40} Comments={120}/> */}
+Сам по себе я`} Comments={120} Articles={['AHmes','Beronulli trials','Cars']}/>
         <Footer/>
     </div>
   )

@@ -1,74 +1,49 @@
-import React, { useState } from "react";
-import Comment from "./Comment";
+import React,{useState} from "react";
 import classNames from "classnames";
-const Article = (props) => {
-	const [upVote, setUpVote] = useState(false);
-	const [downVote, setdownVote] = useState(false);
+import Comment from "./Comment";
+const Discussion = (props) => {
 	const [showComments, setShowComments] = useState(false);
 	const [Comments, setComments] = useState("");
 	const [addcomment, setaddcomment] = useState(false);
-	const[errors,seterrors]=useState([]);
-const HandleSubmit=(e)=>{
-	e.preventDefault();
-	const errors={};
-	if(Comments.length==0) errors.Comments="Comment can't be empty"
-	seterrors(errors);
-	if(Object.keys(errors).length==0){
-		console.log({Comments})
-	}
-}
+	const [errors, seterrors] = useState([]);
+	const HandleSubmit = (e) => {
+		e.preventDefault();
+		const errors = {};
+		if (Comments.length == 0) errors.Comments = "Comment can't be empty";
+		seterrors(errors);
+		if (Object.keys(errors).length == 0) {
+			console.log({ Comments });
+		}
+	};
 	return (
 		<div className="border-4 rounded-lg bg-[#f5f5f5] text-[#333] px-4 ">
 			<nav className="flex flex-row py-4 items-center">
-				<img
-					src={props.img}
-					className="w-20 h-20 rounded-full mx-4"
-					alt={`${props.Author}'s Photo`}
-				/>
 				<h3 className=" text-md font-extralight mx-2">{props.Author}</h3>
 				<h3 className=" text-md font-extralight mx-2">{props.Date}</h3>
 			</nav>
 			<hr className="border-1 border-[#333]" />
 			<main>
 				<h1 className="text-3xl font-bold px-8 py-4">{props.Title}</h1>
-				<p className="text-justify py-4 px-8">{props.text}</p>
-				<figure className="flex flex-col items-center w-50% my-3 ">
-					<img
-						src={props.img}
-						alt="Article Photo"
-						className="block w-70% border rounded-md"
-					/>
-				</figure>
+				<div>
+                    <h1 className="text-3xl font-semibold px-8 py-1">Related Articles:</h1>
+                    <br />
+					{props.Articles.map((Article, index) => (
+						<div key={index} className=" inline-block font-medium mx-3 px-6 py-1">
+							{Article}
+						</div>
+					))}
+                    <span></span>
+				</div>
+
+                <p className="text-justify py-4 px-8">{props.text}</p>
 			</main>
 			<footer>
 				<div className="flex flex-row justify-around mb-3">
-					<h3>Upvotes:{props.Upvotes + upVote}</h3>
-					<h3>Downvotes:{props.Downvotes + downVote}</h3>
 					<h3>Comments:{props.Comments}</h3>
 				</div>
 				<div className="flex flex-row justify-around">
-					<button
-						className="border border-l-2 rounded-lg w-1/3 py-2 hover:border-black hover:bg-slate-300"
-						onClick={(e) => {
-							if (downVote) {
-								setdownVote(false);
-							}
-							setUpVote(!upVote);
-						}}>
-						UpVote
-					</button>
-					<button
-						className="border border-l-2 rounded-lg w-1/3 py-2 hover:border-black hover:bg-slate-300"
-						onClick={(e) => {
-							if (upVote) {
-								setUpVote(false);
-							}
-							setdownVote(!downVote);
-						}}>
-						DownVote
-					</button>
-					<button
-						className="w-1/3 border border-l-2 rounded-lg py-2 hover:border-black hover:bg-slate-300"
+				<button
+						className="w-full border border-l-2 rounded-lg py-2 hover:border-black hover:bg-slate-300"
 						onClick={(e) => {
 							setShowComments(!showComments);
 						}}>
@@ -149,7 +124,11 @@ Big Baby Tape
 					<div>
 						<form onSubmit={HandleSubmit}>
 							<div className="mb-4">
-								<label htmlFor="Comments" className={classNames("block font-medium mb-1",{"hidden":!addcomment})}>
+								<label
+									htmlFor="Comments"
+									className={classNames("block font-medium mb-1", {
+										hidden: !addcomment,
+									})}>
 									<input
 										type="text"
 										id="Comments"
@@ -157,11 +136,15 @@ Big Baby Tape
 										onChange={(e) => setComments(e.target.value)}
 										className={`w-full p-2 border rounded`}
 									/>
-									<button className="border border-black rounded-xl w-48 my-6 px-4 py-2 hover:bg-black hover:text-white mx-auto" onClick={(e)=>{
-										setComments(e.target.value);
-										setaddcomment(false);
-										HandleSubmit(e)
-									}} >Submit</button>
+									<button
+										className="border border-black rounded-xl w-48 my-6 px-4 py-2 hover:bg-black hover:text-white mx-auto"
+										onClick={(e) => {
+											setComments(e.target.value);
+											setaddcomment(false);
+											HandleSubmit(e);
+										}}>
+										Submit
+									</button>
 								</label>
 								{errors.Comments && (
 									<p className="text-red-500 text-sm mt-1">{errors.Comments}</p>
@@ -182,4 +165,4 @@ Big Baby Tape
 	);
 };
 
-export default Article;
+export default Discussion;

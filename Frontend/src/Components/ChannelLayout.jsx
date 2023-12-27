@@ -79,6 +79,14 @@ const ChannelLayout = () => {
 							}}>
 							Discussions
 						</li>
+						<li
+							className="hover:bg-black hover:text-white text-center w-40"
+							onClick={(e) => {
+								setChosen(e.target.innerText);
+								setIsOpen(false);
+							}}>
+							JoinRequests
+						</li>
 					</ul>
 				</div>
 			</div>

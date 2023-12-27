@@ -19,7 +19,6 @@ from .pubSchemas import UserModel, PublisherResponseModel, ChannelCreatedModel
 from pathlib import Path
 from datetime import date, datetime
 import imghdr
-import aiofiles
 from .constants import TokenInteraction
 from pydantic import TypeAdapter
 
@@ -292,3 +291,86 @@ async def join_channel(
         return HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Input"
         )
+
+
+@router.post("/content/create-article", status_code=status.HTTP_201_CREATED)
+async def create_article(
+    request: Request,
+    db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
+    user: str = Depends(TokenInteraction.get_current_user),
+):
+    request_body = await request.json()
+
+    text = request_body["text"]
+    title = request_body["title"]
+    channel_id = int(request_body["channel_id"])
+    video = request_body["video"]
+    photo = request_body["photo"]
+    publishedate = datetime.now()
+
+    # try:
+    with db_conn.cursor(dictionary=True) as cursor:
+        ## check if the user operates the channel
+        query = "SELECT * FROM publisher_manage_channel WHERE publisher_username = %s and channel_id = %s;"
+        cursor.execute(query, (user, channel_id))
+        result = cursor.fetchone()
+
+        if not result:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"{user} Doesn't Operate Channel With ID {channel_id}",
+            )
+
+        query = "INSERT INTO content (text,title,publishdate,channel_id,publisherusername) VALUES(%s,%s,%s,%s,%s);"
+        cursor.execute(
+            query,
+            (text, title, publishedate, channel_id, user),
+        )
+        db_conn.commit()
+        query = "SELECT id FROM content WHERE publishdate = %s AND channel_id = %s AND publisherUsername = %s"
+        cursor.execute(query, (publishedate, channel_id, user))
+        result = cursor.fetchone()
+        id = result["id"]
+
+        query = "INSERT INTO article (content_id,video,photo) VALUES(%s,%s,%s)"
+        cursor.execute(query, (id, video, photo))
+        db_conn.commit()
+        ## make notification
+        query = "SELECT title FROM channel WHERE id = %s"
+        cursor.execute(query, (channel_id))
+        channel_title = cursor.fetchone()
+        channel_title = channel_title["title"]
+        query = (
+            "INSERT INTO  Notification (date,text,related_content_id) VALUES(%s,%s,%s);"
+        )
+        cursor.execute(
+            query,
+            (
+                publishedate.date(),
+                f"New Article Published By {user} In Channel {channel_title}",
+                id,
+            ),
+        )
+        db_conn.commit()
+        release_conn(db_conn)
+        return
+    # except Exception as e:
+    #     print("Error")
+    #     release_conn(db_conn)
+    #     return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
+
+
+@router.post("/content/create-question")
+async def create_question():
+    pass
+
+
+@router.post("/content/create-poll")
+async def create_question():
+    pass
+
+
+@router.post("/content/create-question")
+async def create_question():
+    pass

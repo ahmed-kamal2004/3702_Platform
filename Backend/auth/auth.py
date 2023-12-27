@@ -98,6 +98,50 @@ def student_login(
             release_conn(db_conn)
             return HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Publisher Username doesn't exist",
+                detail="Student Username doesn't exist",
             )
+        ## at end return close all connections
+
+
+
+@router.post("/adm")
+def admin_login(
+    data: OAuth2PasswordRequestForm = Depends(),
+    db_conn: PooledMySQLConnection = Depends(get_conn),
+):
+    with db_conn.cursor() as cursor:
+        username = data.username
+        password = data.password
+        print(username,password)
+        first_query = "SELECT * FROM admin WHERE username = %s"
+        cursor.execute(first_query, (username,))
+        result = cursor.fetchall()
+        print(result)
+        if result:
+            second_query = "SELECT password FROM admin WHERE username = %s"
+            cursor.execute(second_query, (username,))
+            result = cursor.fetchone()
+            release_conn(db_conn)
+            print(result[0])
+            if PasswordInteraction.verify_password(
+                password=password, hashed_password=result[0]
+            ):
+                ## need to generate Token
+
+                token_data = {"username": username}
+                token = usc.TokenInteraction.create_token(token_data)
+                return token
+            else:
+                return HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Wrong Password",
+                )
+
+        else:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Admin Username doesn't exist",
+            )
+        
         ## at end return close all connections

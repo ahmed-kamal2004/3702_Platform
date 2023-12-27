@@ -3,7 +3,6 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
-from .pubSchemas import PublisherTokenDataModel
 import string
 import random
 

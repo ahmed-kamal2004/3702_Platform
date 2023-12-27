@@ -12,6 +12,7 @@ from fastapi import (
     File,
     Form,
     Response,
+    Request
 )
 from typing import Annotated
 from .stuSchemas import UserModel, StudentResponseModel
@@ -27,20 +28,26 @@ router = APIRouter(prefix="/stu", tags=["Students"])
     "/stu-sign-up/",
     status_code=status.HTTP_201_CREATED,
 )
-async def create_student(
-    username: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...),
-    DOB: date = Form(...),
-    nickname: str = Form(...),
-    phonenumber: str = Form(...),
-    photo: UploadFile = Form(...),
+async def sign_up(
+    request: Request,
     db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
 ):
+    request_body = await request.json()
+
+    username = request_body["username"]
+    email = request_body["email"]
+    password = request_body["password"]
+    DOB = request_body["DOB"]
+    nickname = request_body["nickname"]
+    phonenumber = request_body["phonenumber"]
+    photo = request_body["photo"]
+
     print(username, email, password, DOB, nickname, phonenumber)
     with db_conn.cursor() as cursor:
+        ## nedd validation for data
+
         ## First Check for username
-        query = f"SELECT * FROM user WHERE username=%s;"
+        query = "SELECT * FROM user WHERE username=%s;"
         cursor.execute(query, (username,))
         result = cursor.fetchone()
         if result:
@@ -50,28 +57,14 @@ async def create_student(
             )
 
         ## second we check for email
-        query = f"SELECT * FROM user WHERE email=%s;"
+        query = "SELECT * FROM user WHERE email=%s;"
         cursor.execute(query, (email,))
         result = cursor.fetchone()
         if result:
-            release_conn(db_conn)
             return HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="Email in Use"
             )
-
-        file_path = Path("uploads/photos/profile_picture")  # Adjust base path as needed
-        file_path.mkdir(parents=True, exist_ok=True)  # Create directories if needed
-
-        # Generate unique filename with extension
-        filename = f"{username}.{photo.filename.split('.')[-1]}"
-        print(filename)
-        file_path = file_path / filename
-
-        # Read file content and save to disk
-        async with aiofiles.open(file_path, "wb") as f:
-            while content := await photo.read(1024):  # async read chunk
-                await f.write(content)
-
+        DOB = datetime.strptime(DOB, "%Y-%m-%d")
         try:
             query = "INSERT INTO user (username,email,password,is_active,photo,DOB,nickname,phonenumber)VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"
             cursor.execute(
@@ -81,7 +74,7 @@ async def create_student(
                     email,
                     PasswordInteraction.hash_password(password),
                     True,
-                    str(filename),
+                    photo,
                     DOB,
                     nickname,
                     phonenumber,
@@ -92,15 +85,15 @@ async def create_student(
             cursor.execute(query, (username,))
 
             db_conn.commit()
+            release_conn(db_conn)
         except Exception as e:
             release_conn(db_conn)
+            print(e)
             return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e)
         else:
             release_conn(db_conn)
-            return HTTPException(
-                status_code=status.HTTP_201_CREATED,
-                detail=f"Succes Student of username :{username} is created",
-            )
+            return {"detail": f"Succes username of {username} is created"}
+
 
 
 @router.get("/get_profile_photo")

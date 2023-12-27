@@ -11,10 +11,6 @@ class AConstant:
     class TokenINFO:
         SECRET_KEY = """gedsjvndfjknfioewfsdfjkfhjdkfhuyeoihdsjkvcbjcdzbncdsklfjdklf
         dhfklshfdsfjkvhcdnjvkdbnvkjdsvbfkjvbvdsjkvbdckjcdsbvdsjkhfdsvkbvcjksdfbvkjsh
-        dbcsdkjbckdsjcvkdsbvkjvbvdsjkvbdfksvbkscjsdjchdsjkvjkvhdfjvkbjkfvbfjkvbfkjbv
-        kjsdvbsfdnvdlvnfljvndfvnkldsnfklsgrirtpetjhymjpuomnm,vm.dsfkldfskljdlsfjkkdl
-        vklkdsfhkldsfhjkrhjkgfdvfbcvxnmvmncmn,zvdsfjkafjkhhjkfshjkfdsjkdvnsbmvmncxzm
-        ,nzcxm,nsdkadshjkjadhkaheehjkerkwtjewrtuyutyirttttttttttttttttttttttttdmvbvv
         c,makjdzxncndksjjccxnjcxzcjshjkdsfahkdfjlsjkl;adscklcnmmcvnmbbmncxvjwedpwejo
         erhdsfiwedoidfnfekbndserblcdsbdfsdbchdfvlbddsnfekdvdfjvghnndfkgjhkfldsghsdlk
         fsdhklfdsjfhklsdfjdfklsnvcjvndskxcdjlkbndfkgjnbfkgjbfgkjdsngsdklfndsfkljsakf
@@ -79,8 +75,8 @@ class TokenInteraction:
 
 class EmailInteraction:
         subject = "OTP vertification"
-        sender_email = "ahmedkamal200427@gmail.com"  ## Must Be changed
-        sender_password = None                       ## Must be changed
+        sender_email = "ahmedkamal200427@gmail.com"  ## Must be changed
+        sender_password = None ## Must be changed
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
 

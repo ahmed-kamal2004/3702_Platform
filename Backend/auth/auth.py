@@ -4,6 +4,7 @@ from DatabaseConnection import get_conn, PooledMySQLConnection, release_conn
 from passlib.context import CryptContext
 import users.publisher.constants as upc
 import users.student.constants as usc
+import admin.constants as ac
 
 
 router = APIRouter(prefix="/login", tags=["Login"])
@@ -129,7 +130,7 @@ def admin_login(
                 ## need to generate Token
 
                 token_data = {"username": username}
-                token = usc.TokenInteraction.create_token(token_data)
+                token = ac.TokenInteraction.create_token(token_data)
                 return token
             else:
                 return HTTPException(

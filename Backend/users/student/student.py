@@ -20,6 +20,7 @@ from pathlib import Path
 from datetime import date, datetime
 import imghdr
 import aiofiles
+from .constants import TokenInteraction
 
 router = APIRouter(prefix="/stu", tags=["Students"])
 
@@ -116,7 +117,7 @@ async def get_photo(filename: str = Form(...)):
         return Response(status_code=500, content=f"Error retrieving photo: {e}")
 
 
-@router.get("/studnet/{username}", response_model=StudentResponseModel)
+@router.get("/student/{username}", response_model=StudentResponseModel)
 def get_student(
     username: str, db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn)
 ):
@@ -141,3 +142,31 @@ def get_student(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Student Username Not Found",
             )
+
+
+
+
+@router.put("/change-password",status_code=status.HTTP_202_ACCEPTED)
+async def change_passowrd(request:Request,username :str = Depends(TokenInteraction.get_current_user),db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn)):
+    request_body = await request.json()
+    password = request_body["password"]
+
+
+
+        ## if changed return Success with 202
+        ## else return Failure with 422
+    with db_conn.cursor() as cursor:
+        try:
+            query = "UDPATE user SET password = %s WHERE username = %s"
+            cursor.execute(query,(PasswordInteraction.hash_password(password),username))
+            db_conn.commit()
+            release_conn(db_conn)
+            return {"message":"Success"}
+        except Exception as e:
+            try:
+                release_conn(db_conn)
+            except:
+                pass
+            return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,detail = e)
+        
+        

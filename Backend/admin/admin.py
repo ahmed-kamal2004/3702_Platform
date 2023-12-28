@@ -249,3 +249,30 @@ async def delete_channel(channel_id:int,admin_user:str = Depends(TokenInteractio
     
 
 ###################################
+
+
+
+@router.put("/change-password",status_code=status.HTTP_202_ACCEPTED)
+async def change_passowrd(request:Request,username :str = Depends(TokenInteraction.get_current_user),db_conn: PooledMySQLConnection = Depends(get_conn)):
+    request_body = await request.json()
+    password = request_body["password"]
+
+
+
+        ## if changed return Success with 202
+        ## else return Failure with 422
+    with db_conn.cursor() as cursor:
+        try:
+            query = "UDPATE admin SET password = %s WHERE username = %s"
+            cursor.execute(query,(PasswordInteraction.hash_password(password),username))
+            db_conn.commit()
+            release_conn(db_conn)
+            return {"message":"Success"}
+        except Exception as e:
+            try:
+                release_conn(db_conn)
+            except:
+                pass
+            return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,detail = e)
+        
+        

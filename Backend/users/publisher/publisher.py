@@ -15,7 +15,7 @@ from fastapi import (
     Request,
 )
 from typing import Annotated, List
-from .pubSchemas import UserModel, PublisherResponseModel, ChannelCreatedModel
+from .pubSchemas import  PublisherResponseModel, ChannelCreatedModel
 from pathlib import Path
 from datetime import date, datetime
 import imghdr
@@ -47,7 +47,6 @@ async def sign_up(
     job = request_body["job"]
     photo = request_body["photo"]
 
-    print(username, email, password, DOB, nickname, phonenumber)
     with db_conn.cursor() as cursor:
         ## nedd validation for data
 
@@ -99,6 +98,31 @@ async def sign_up(
             release_conn(db_conn)
             return {"detail": f"Succes username of {username} is created"}
 
+
+@router.put("/change-password",status_code=status.HTTP_202_ACCEPTED)
+async def change_passowrd(request:Request,username :str = Depends(TokenInteraction.get_current_user),db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn)):
+    request_body = await request.json()
+    password = request_body["password"]
+
+
+
+        ## if changed return Success with 202
+        ## else return Failure with 422
+    with db_conn.cursor() as cursor:
+        try:
+            query = "UDPATE user SET password = %s WHERE username = %s"
+            cursor.execute(query,(PasswordInteraction.hash_password(password),username))
+            db_conn.commit()
+            release_conn(db_conn)
+            return {"message":"Success"}
+        except Exception as e:
+            try:
+                release_conn(db_conn)
+            except:
+                pass
+            return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,detail = e)
+        
+        
 
 ## Get All Active Publishers Code
 @router.get(

@@ -124,7 +124,7 @@ create table article (
 );
 create table quiz (
     content_id integer not null,
-    duration BIGINT,
+    duration datetime,
     starting_date datetime,
     primary key (content_id),
     foreign key (content_id) references content(id) on delete cascade on update cascade

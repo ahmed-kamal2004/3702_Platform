@@ -4,19 +4,6 @@ from schema import TokenModel, UserModel, BaseModel
 from pydantic import Field, EmailStr
 from datetime import datetime
 from fastapi import UploadFile, Form
-
-
-### TOKEN
-
-
-class PublisherTokenDataModel(TokenModel):
-    username: str
-
-    class Config:
-        from_attribute = True
-        populate_by_name = True
-
-
 ### Publisher Response Models
 
 

@@ -47,7 +47,7 @@ async def create_student(
         cursor.execute(query, (username,))
         result = cursor.fetchone()
         if result:
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Username in Use",
             )
@@ -57,7 +57,7 @@ async def create_student(
         cursor.execute(query, (email,))
         result = cursor.fetchone()
         if result:
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="Email in Use"
             )
         DOB = datetime.strptime(DOB, "%Y-%m-%d")
@@ -83,7 +83,7 @@ async def create_student(
             db_conn.commit()
         except Exception as e:
             release_conn(db_conn)
-            return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e)
         else:
             release_conn(db_conn)
             return HTTPException(
@@ -100,16 +100,16 @@ async def get_photo(filename: str = Form(...)):
         # Use imghdr to determine the image type
         image_type = imghdr.what(file_path)
         if not image_type:
-            return Response(status_code=415, content="Unsupported Media Type")
+            raise Response(status_code=415, content="Unsupported Media Type")
 
         with open(file_path, "rb") as f:
             photo_data = f.read()
 
         return Response(content=photo_data, media_type=f"image/{image_type}")
     except FileNotFoundError:
-        return Response(status_code=404, content="Photo not found")
+        raise Response(status_code=404, content="Photo not found")
     except Exception as e:
-        return Response(status_code=500, content=f"Error retrieving photo: {e}")
+        raise Response(status_code=500, content=f"Error retrieving photo: {e}")
 
 
 @router.get("/studnet/{username}", response_model=StudentResponseModel)
@@ -133,7 +133,7 @@ def get_student(
             )
             return output
         else:
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Student Username Not Found",
             )

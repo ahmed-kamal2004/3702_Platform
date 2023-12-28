@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {useNavigate} from 'react-router-dom'
 const SignUp = () => {
 	const [Type, setType] = useState("Student");
 	const [username, setUsername] = useState("");
@@ -13,7 +14,15 @@ const SignUp = () => {
 	const [profilePhoto, setProfilePhoto] = useState(null);
 	const [errors, setErrors] = useState({});
 	const [valid, setValid] = useState(false);
-
+	const navigate=useNavigate();
+	const telephoneCheck=(str)=>{
+		let regex = /^\d{11}$/;
+		if (regex.test(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	const jobOptions = [
 		"Software Engineer",
 		"Web Developer",
@@ -54,6 +63,8 @@ const SignUp = () => {
 		}
 		if (!linkedinUrl && Type == "Publisher")
 			errors.linkedinUrl = "Linkedin URL is required";
+		if(!telephoneCheck(phoneNumber))
+			errors.phoneNumber="Phone number is not valid"
 		setErrors(errors);
 
 		// Submit the form if there are no errors
@@ -71,10 +82,15 @@ const SignUp = () => {
 					})
 					.then(
 						(response) => {
-							console.log(response);
+							navigate("/SignIn");
 						},
 						(error) => {
-							console.log(error.response);
+							console.log(error.response)
+							if(error.response.data.detail=="Username in Use")
+								errors.username="Username in Use";
+							else
+								errors.email="Email in Use";
+							setErrors(errors);	
 						}
 					);
 			} else {
@@ -95,10 +111,15 @@ const SignUp = () => {
 					})
 					.then(
 						(response) => {
-							console.log(response);
+							navigate("/SignIn");
 						},
 						(error) => {
-							console.log(error.response);
+							console.log(error.response)
+							if(error.response.data.detail==="Username in Use")
+							errors.username="Username in Use";
+							else
+							errors.email="Email in Use";
+						setErrors(errors);	
 						}
 					);
 			}
@@ -284,7 +305,7 @@ const SignUp = () => {
 							Birthdate
 						</label>
 						<input
-							type="text"
+							type="date"
 							id="birthdate"
 							//value={birthdate}
 							onChange={(e) => setBirthdate(e.target.value)}
@@ -314,7 +335,7 @@ const SignUp = () => {
 					</div>
 					<button
 						type="submit"
-						className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded">
+						className="bg-black text-white px-4  py-2 rounded-md">
 						Sign Up
 					</button>
 				</form>

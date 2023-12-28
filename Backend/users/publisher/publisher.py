@@ -57,7 +57,7 @@ async def sign_up(
         cursor.execute(query, (username,))
         result = cursor.fetchone()
         if result:
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Username in Use",
             )
@@ -67,7 +67,7 @@ async def sign_up(
         cursor.execute(query, (email,))
         result = cursor.fetchone()
         if result:
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="Email in Use"
             )
         DOB = datetime.strptime(DOB, "%Y-%m-%d")
@@ -94,8 +94,7 @@ async def sign_up(
             release_conn(db_conn)
         except Exception as e:
             release_conn(db_conn)
-            print(e)
-            return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e)
         else:
             release_conn(db_conn)
             return {"detail": f"Succes username of {username} is created"}
@@ -139,7 +138,7 @@ def get_publisher(
             )
             return output
         else:
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Username Not Found"
             )
 
@@ -167,7 +166,7 @@ async def create_channel(
     code = request_body["code"]
 
     if user != username:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Login First"
         )
     with db_conn.cursor(dictionary=True) as cursor:
@@ -176,7 +175,7 @@ async def create_channel(
         result = cursor.fetchone()
         if not result:
             release_conn(db_conn)
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Login First"
             )
 
@@ -185,7 +184,7 @@ async def create_channel(
         result = cursor.fetchone()
         if result:
             release_conn(db_conn)
-            return HTTPException(
+            raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Channel already exists"
             )
         else:
@@ -224,7 +223,7 @@ async def create_channel(
                 return model
             except Exception as e:
                 release_conn(db_conn)
-                return HTTPException(
+                raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail=e,
                 )
@@ -255,7 +254,7 @@ async def join_channel(
             if not result:
                 ## means that the channel not exists
                 release_conn(db_conn)
-                return HTTPException(
+                raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, detail="Channel not found"
                 )
             ## check that the main user operates the channel
@@ -264,7 +263,7 @@ async def join_channel(
             result = cursor.fetchall()
             if not result:
                 release_conn(db_conn)
-                return HTTPException(
+                raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail=f"Main user : {user} Doesn't Operate the channel",
                 )
@@ -274,7 +273,7 @@ async def join_channel(
             result = cursor.fetchall()
             if result:
                 release_conn(db_conn)
-                return HTTPException(
+                raise HTTPException(
                     status_code=status.HTTP_204_NO_CONTENT,
                     detail="Already operates the channel",
                 )
@@ -289,6 +288,6 @@ async def join_channel(
 
     except Exception as e:
         release_conn(db_conn)
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Input"
         )

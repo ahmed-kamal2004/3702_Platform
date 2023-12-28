@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import classNames from "classnames";
-
+import { NavLink } from "react-router-dom";
 const ChannelLayout = () => {
     const [isOpen, setIsOpen] = useState(false);
 	const [chosen, setChosen] = useState("DashBoard");
@@ -8,7 +8,7 @@ const ChannelLayout = () => {
 		<div className="bg-amber-100">
 			<div className="flex flex-row justify-between m-4 my-0 px-4 py-2 ">
 				<h1 className=" text-2xl md:grow-1 uppercase font-extrabold underline underline-offset-[5px] decoration-2">
-					# 3702_Platform
+				<NavLink to="/"># 3702_Platform</NavLink>
 				</h1>
 				<div>
 					<button

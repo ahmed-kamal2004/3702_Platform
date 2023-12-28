@@ -35,7 +35,7 @@ const CreateChannel = () => {
 		}
 	};
 	return (
-		<div>
+		<div className="bg-amber-100">
 			<h1 className="text-center font-bold text-4xl mb-6">Create a Channel!</h1>
 			<form
 				onSubmit={HandleSubmit}

@@ -1,5 +1,5 @@
 import React from "react";
-
+import {Link} from "react-router-dom"
 export const Home = () => {
 	return (
 		<div className="bg-amber-100">
@@ -12,7 +12,7 @@ export const Home = () => {
 					platform
 				</h3>
 				<button className="bg-black text-white py-2 px-4 m-2 rounded-md">
-					Join Now
+					<Link to="/SignUp/">Join Now</Link>
 				</button>
 			</div>
 			<div className="h-[40vh] flex flex-row items-center justify-start py-[24rem] px-10">
@@ -75,7 +75,7 @@ export const Home = () => {
 				<div className="">
                     <h1 className="font-bold text-4xl m-2">Online Learning Platform</h1>
 				    <p className="font-light text-medium px-2 my-4 w-2/3">Access our comprehensive online learning platform designed to provide high-quality education to students of all ages. With interactive lessons, engaging activities, and skilled instructors, our platform offers a flexible and effective way to enhance learning outcomes.</p>
-                    <button className="bg-black text-white px-4  py-2 rounded-md">Explore</button>
+                    <button className="bg-black text-white px-4  py-2 rounded-md"><Link to="/Explore/">Explore</Link></button>
                 </div>
 				<img
 					alt="O"

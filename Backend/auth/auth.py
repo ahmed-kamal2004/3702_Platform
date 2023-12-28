@@ -32,14 +32,14 @@ async def publisher_login(
         username = request_body["username"]
         password = request_body["password"]
 
-        first_query = "SELECT username FROM user WHERE username = %s"
+        first_query = "SELECT username FROM publisher WHERE username = %s"
         cursor.execute(first_query, (username,))
         result = cursor.fetchone()
         if result:
             second_query = "SELECT password FROM user WHERE username = %s"
             cursor.execute(second_query, (username,))
             result = cursor.fetchone()
-            release_conn(db_conn)
+            await release_conn(db_conn)
             print(result)
             if PasswordInteraction.verify_password(
                 password=password, hashed_password=result[0]
@@ -50,14 +50,14 @@ async def publisher_login(
                 token = upc.TokenInteraction.create_token(token_data)
                 return token
             else:
-                return HTTPException(
+                raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Wrong Password",
                 )
 
         else:
-            release_conn(db_conn)
-            return HTTPException(
+            await release_conn(db_conn)
+            raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Username doesn't exist",
             )
@@ -75,14 +75,14 @@ async def student_login(
         username = request_body["username"]
         password = request_body["password"]
 
-        first_query = "SELECT username FROM user WHERE username = %s"
+        first_query = "SELECT username FROM student WHERE username = %s"
         cursor.execute(first_query, (username,))
         result = cursor.fetchone()
         if result:
             second_query = "SELECT password FROM user WHERE username = %s"
             cursor.execute(second_query, (username,))
             result = cursor.fetchone()
-            release_conn(db_conn)
+            await release_conn(db_conn)
             print(result)
             if PasswordInteraction.verify_password(
                 password=password, hashed_password=result[0]
@@ -93,15 +93,15 @@ async def student_login(
                 token = usc.TokenInteraction.create_token(token_data)
                 return token
             else:
-                return HTTPException(
+                raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Wrong Password",
                 )
 
         else:
-            release_conn(db_conn)
-            return HTTPException(
+            await release_conn(db_conn)
+            raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Publisher Username doesn't exist",
+                detail="Student Username doesn't exist",
             )
         ## at end return close all connections

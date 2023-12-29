@@ -122,7 +122,7 @@ async def change_passowrd(request:Request,username :str = Depends(TokenInteracti
                 pass
             return HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,detail = e)
         
-        
+
 
 ## Get All Active Publishers Code
 @router.get(
@@ -332,7 +332,6 @@ async def create_article(
     photo = request_body["photo"]
     publishedate = datetime.now()
 
-    # try:
     with db_conn.cursor(dictionary=True) as cursor:
         ## check if the user operates the channel
         query = "SELECT * FROM publisher_manage_channel WHERE publisher_username = %s and channel_id = %s;"
@@ -352,49 +351,226 @@ async def create_article(
             (text, title, publishedate, channel_id, user),
         )
         db_conn.commit()
-        query = "SELECT id FROM content WHERE publishdate = %s AND channel_id = %s AND publisherUsername = %s"
-        cursor.execute(query, (publishedate, channel_id, user))
+        query = "SELECT LAST_INSERT_ID() as Id"
+        cursor.execute(query)
         result = cursor.fetchone()
-        id = result["id"]
+        print(result)
+        id = result['Id']
 
         query = "INSERT INTO article (content_id,video,photo) VALUES(%s,%s,%s)"
         cursor.execute(query, (id, video, photo))
         db_conn.commit()
-        ## make notification
-        query = "SELECT title FROM channel WHERE id = %s"
-        cursor.execute(query, (channel_id))
-        channel_title = cursor.fetchone()
-        channel_title = channel_title["title"]
-        query = (
-            "INSERT INTO  Notification (date,text,related_content_id) VALUES(%s,%s,%s);"
-        )
-        cursor.execute(
-            query,
-            (
-                publishedate.date(),
-                f"New Article Published By {user} In Channel {channel_title}",
-                id,
-            ),
-        )
+        release_conn(db_conn)
+        return {"message":"Success"}
+
+@router.post("/content/create-question",status_code=status.HTTP_201_CREATED)
+async def create_question(
+    request: Request,
+    db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
+    user: str = Depends(TokenInteraction.get_current_user)
+):
+    request_body = await request.json()
+
+    text = request_body["text"]
+    answer = request_body["answer"]
+    channel_id = request_body["channel_id"]
+    choices = request_body["choices"]
+
+
+
+    with db_conn.cursor(dictionary=True) as cursor:
+        ## check if the user operates the channel
+        query = "SELECT * FROM publisher_manage_channel WHERE publisher_username = %s and channel_id = %s;"
+        cursor.execute(query, (user, channel_id))
+        result = cursor.fetchone()
+
+        if not result:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"{user} Doesn't Operate Channel With ID {channel_id}",
+            )
+
+        ## create question
+        query = "INSERT INTO question(text,answer,channel_id) VALUES(%s,%s,%s)"
+        cursor.execute(query,(text,answer,channel_id))
+
+        cursor.execute("select LAST_INSERT_ID() as Id")
+        last_question_id = cursor.fetchone()
+        last_question_id = last_question_id['Id']
+
+        query = "INSERT INTO question_choices(question_id,choice) VALUES (%s,%s)"
+
+        for choice in choices:
+            cursor.execute(query,(last_question_id,choice))
+        
         db_conn.commit()
         release_conn(db_conn)
-        return
-    # except Exception as e:
-    #     print("Error")
-    #     release_conn(db_conn)
-    #     return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
+        return {"message":"Success","Question_id":last_question_id}
 
 
-@router.post("/content/create-question")
-async def create_question():
-    pass
 
 
-@router.post("/content/create-poll")
-async def create_question():
-    pass
 
 
-@router.post("/content/create-question")
-async def create_question():
-    pass
+@router.post("/content/create-quiz",status_code=status.HTTP_201_CREATED)
+async def create_quiz(
+    request: Request,
+    db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
+    user: str = Depends(TokenInteraction.get_current_user)
+):
+    request_body = await request.json()
+
+    text = request_body["text"]
+    title = request_body["title"]
+    channel_id = request_body["channel_id"]
+    questions = request_body["questions"]
+    startDate = request_body["start_date"]
+    endDate = request_body["end_date"]
+    publishDate = datetime.now()
+
+
+    with db_conn.cursor(dictionary=True) as cursor:
+        ## check if the user operates the channel
+        query = "SELECT * FROM publisher_manage_channel WHERE publisher_username = %s and channel_id = %s;"
+        cursor.execute(query, (user, channel_id))
+        result = cursor.fetchone()
+
+        if not result:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"{user} Doesn't Operate Channel With ID {channel_id}",
+            )
+
+        ## create quiz
+        query = "INSERT INTO content(text,title,publishDate,channel_id,publisherUsername) VALUES (%s,%s,%s,%s,%s)"
+        cursor.execute(query,(text,title,publishDate,channel_id,user))
+        cursor.execute("SELECT LAST_INSERT_ID() as Id")
+        last_inserted_id_content = cursor.fetchone()
+        last_inserted_id_content = last_inserted_id_content['Id']
+
+        query = "INSERT INTO quiz(content_id,duration,starting_date) VALUES(%s,%s,%s)"
+        cursor.execute(query,(last_inserted_id_content,endDate,startDate))
+
+        query = "INSERT INTO quiz_question(question_id,quiz_id) VALUES (%s,%s)"
+
+        for choice in questions:
+            cursor.execute(query,(choice,last_inserted_id_content))
+        
+        db_conn.commit()
+        release_conn(db_conn)
+        return {"message":"Success","Quiz_id":last_inserted_id_content}
+
+
+
+
+
+
+
+
+@router.post("/content/create-problemSet",status_code=status.HTTP_201_CREATED)
+async def create_problem_set(
+    request: Request,
+    db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
+    user: str = Depends(TokenInteraction.get_current_user)
+):
+    request_body = await request.json()
+
+    text = request_body["text"]
+    title = request_body["title"]
+    channel_id = request_body["channel_id"]
+    questions = request_body["questions"]
+    endDate = request_body["deadline"]
+    publishDate = datetime.now()
+
+
+    with db_conn.cursor(dictionary=True) as cursor:
+        ## check if the user operates the channel
+        query = "SELECT * FROM publisher_manage_channel WHERE publisher_username = %s and channel_id = %s;"
+        cursor.execute(query, (user, channel_id))
+        result = cursor.fetchone()
+
+        if not result:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"{user} Doesn't Operate Channel With ID {channel_id}",
+            )
+
+        ## create quiz
+        query = "INSERT INTO content(text,title,publishDate,channel_id,publisherUsername) VALUES (%s,%s,%s,%s,%s)"
+        cursor.execute(query,(text,title,publishDate,channel_id,user))
+        cursor.execute("SELECT LAST_INSERT_ID() as Id")
+        last_inserted_id_content = cursor.fetchone()
+        last_inserted_id_content = last_inserted_id_content['Id']
+
+        query = "INSERT INTO problemset(content_id,deadline) VALUES(%s,%s)"
+        cursor.execute(query,(last_inserted_id_content,endDate))
+
+        query = "INSERT INTO ps_question(question_id,PS_id) VALUES (%s,%s)"
+
+        for choice in questions:
+            cursor.execute(query,(choice,last_inserted_id_content))
+        
+        db_conn.commit()
+        release_conn(db_conn)
+        return {"message":"Success","Problem Set_id":last_inserted_id_content}
+
+
+
+
+
+
+
+
+
+
+
+@router.post("/content/create-homework",status_code=status.HTTP_201_CREATED)
+async def create_quiz(
+    request: Request,
+    db_conn: DatabaseConnection.PooledMySQLConnection = Depends(get_conn),
+    user: str = Depends(TokenInteraction.get_current_user)
+):
+    request_body = await request.json()
+
+    text = request_body["text"]
+    title = request_body["title"]
+    channel_id = request_body["channel_id"]
+    questions = request_body["questions"]
+    publishDate = datetime.now()
+
+
+    with db_conn.cursor(dictionary=True) as cursor:
+        ## check if the user operates the channel
+        query = "SELECT * FROM publisher_manage_channel WHERE publisher_username = %s and channel_id = %s;"
+        cursor.execute(query, (user, channel_id))
+        result = cursor.fetchone()
+
+        if not result:
+            release_conn(db_conn)
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"{user} Doesn't Operate Channel With ID {channel_id}",
+            )
+
+        ## create quiz
+        query = "INSERT INTO content(text,title,publishDate,channel_id,publisherUsername) VALUES (%s,%s,%s,%s,%s)"
+        cursor.execute(query,(text,title,publishDate,channel_id,user))
+        cursor.execute("SELECT LAST_INSERT_ID() as Id")
+        last_inserted_id_content = cursor.fetchone()
+        last_inserted_id_content = last_inserted_id_content['Id']
+
+        query = "INSERT INTO homework(content_id) VALUES(%s)"
+        cursor.execute(query,(last_inserted_id_content,))
+
+        query = "INSERT INTO hw_question(question_id,HW_id) VALUES (%s,%s)"
+
+        for choice in questions:
+            cursor.execute(query,(choice,last_inserted_id_content))
+        
+        db_conn.commit()
+        release_conn(db_conn)
+        return {"message":"Success","Homework_id":last_inserted_id_content}
+

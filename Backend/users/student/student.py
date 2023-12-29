@@ -194,7 +194,7 @@ async def join_channel(
             query = "SELECT code FROM channel WHERE id = %s"
             cursor.execute(query,(channel_id,))
             result = cursor.fetchone()
-            if result['code'] == code:
+            if PasswordInteraction.verify_password(password=code,hashed_password=result['code']):
                 query = "INSERT INTO join_channel (studentUsername,channel_id,requestStatus) VALUES (%s,%s,%s)"
 
                 cursor.execute(query,(user,channel_id,True))
@@ -246,19 +246,6 @@ async def disjoin_channel(
 
 
 
-# @router.post("/comment-article",status_code = status.HTTP_201_CREATED)
-# async def comment_article(request:Request,db_conn:DatabaseConnection.PooledMySQLConnection = Depends(get_conn)
-#                           ,username:str = Depends(TokenInteraction.get_current_user)):
-#     pass
-        
-
-
-# @router.post("/vote-article",status_code = status.HTTP_201_CREATED)
-# async def vote_article(request:Request,db_conn:DatabaseConnection.PooledMySQLConnection = Depends(get_conn)
-#                           ,username:str = Depends(TokenInteraction.get_current_user)):
-#     request_body = request.json()
-
-#     channel_id= request_body["channel_id"]
 
 
 @router.post("/solve-quiz")

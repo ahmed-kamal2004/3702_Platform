@@ -251,7 +251,7 @@ async def get_questions(
                         release_conn(db_conn)
                         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail = "This is Private Channel")
         query = "SELECT id FROM question WHERE channel_id = %s"
-        cursor.execute(query,(channel_id))
+        cursor.execute(query,(channel_id,))
         result = cursor.fetchall()
         release_conn(db_conn)
         return result
@@ -293,12 +293,12 @@ async def get_question(
                     if not result:
                         release_conn(db_conn)
                         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail = "This is Private Channel")
-        query = "SELECT id FROM question WHERE channel_id = %s WHERE id = %s"
+        query = "SELECT * FROM question WHERE channel_id = %s AND id = %s"
         cursor.execute(query,(channel_id,id))
         result = cursor.fetchall()
 
         query = "SELECT choice FROM question_choices WHERE question_id = %s"
-        cursor.execute(query,(id))
+        cursor.execute(query,(id,))
         result_choice = cursor.fetchall()
         return {"Question":result,"Question_Choices":result_choice}
 
@@ -455,7 +455,7 @@ async def get_problemsets(
                     FROM content
                             INNER JOIN problemset ON content.id = problemset.content_id
                     WHERE content.publishdate < %s
-                            AND problemset.deadline > %s,
+                            AND problemset.deadline > %s
                             AND content.channel_id = %s;
 """
         cursor.execute(query,(current_date,current_date,channel_id))
@@ -514,7 +514,7 @@ async def get_problemset(
                             INNER JOIN problemset ON content.id = problemset.content_id
                     WHERE content.publishdate < %s
                             AND problemset.deadline > %s
-                            AND content.id = %s,
+                            AND content.id = %s
                             AND content.channel_id = %s;
 """
         cursor.execute(query,(current_date,current_date,id,channel_id))
@@ -577,7 +577,7 @@ async def get_quizes(
                             INNER JOIN quiz ON content.id = quiz.content_id
                     WHERE content.publishdate < %s 
                             AND quiz.starting_date < %s 
-                            AND quiz.duration > %s,
+                            AND quiz.duration > %s
                             AND content.channel_id = %s;
 """
         cursor.execute(query,(current_date,current_date,current_date,channel_id))

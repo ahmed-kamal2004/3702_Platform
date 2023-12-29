@@ -14,13 +14,9 @@ class PConstant:
         dbcsdkjbckdsjcvkdsbvkjvbvdsjkvbdfksvbkscjsdjchdsjkvjkvhdfjvkbjkfvbfjkvbfkjbv
         kjsdvbsfdnvdlvnfljvndfvnkldsnfklsgrirtpetjhymjpuomnm,vm.dsfkldfskljdlsfjkkdl
         vklkdsfhkldsfhjkrhjkgfdvfbcvxnmvmncmn,zvdsfjkafjkhhjkfshjkfdsjkdvnsbmvmncxzm
-        ,nzcxm,nsdkadshjkjadhkaheehjkerkwtjewrtuyutyirttttttttttttttttttttttttdmvbvv
-        c,makjdzxncndksjjccxnjcxzcjshjkdsfahkdfjlsjkl;adscklcnmmcvnmbbmncxvjwedpwejo
-        erhdsfiwedoidfnfekbndserblcdsbdfsdbchdfvlbddsnfekdvdfjvghnndfkgjhkfldsghsdlk
-        fsdhklfdsjfhklsdfjdfklsnvcjvndskxcdjlkbndfkgjnbfkgjbfgkjdsngsdklfndsfkljsakf
         jsd;fjasl;dfajsdl;asjdasl;jasl;djsl;dfsdferfsondsfklfbvdfcnsdferiofejpdsvndf
         cxklchvfdjghdfkhsdiufsdkfhsdkjfhsadkvgbgerioufhaw9psaodiehfdsolebedferdskjdf"""
-        EXPIRETIME_MIN = 15
+        EXPIRETIME_MIN = 3000
         ALGORITHM = "HS256"
         ## here I should pass the endpoint of logging
         OAuth2_schema = OAuth2PasswordBearer(tokenUrl="/login/pub")

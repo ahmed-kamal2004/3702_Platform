@@ -86,7 +86,7 @@ create table get_notification(
     foreign key (notification_id) references Notification(id) on delete cascade on update cascade
 );
 create table question(
-    id integer not null,
+    id integer not null AUTO_INCREMENT,
     text varchar(10000),
     answer varchar(200),
     channel_id integer,

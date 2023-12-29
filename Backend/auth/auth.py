@@ -75,7 +75,7 @@ async def student_login(
         username = request_body["username"]
         password = request_body["password"]
 
-        first_query = "SELECT username FROM student WHERE username = %s"
+        first_query = "SELECT username FROM user WHERE username = %s"
         cursor.execute(first_query, (username,))
         result = cursor.fetchone()
         if result:

@@ -27,6 +27,7 @@ import ChannelLayout from "./Components/ChannelLayout";
 import Authentication from "./Components/Authentication";
 import Publisher from "./Pages/Publisher";
 import CreateChannel from "./Components/CreateChannel";
+import Admin from "./Pages/Admin";
 function App() {
 	const router = createBrowserRouter(
 		createRoutesFromElements(
@@ -37,12 +38,14 @@ function App() {
 				<Route path="SignUp" element={<SignUp />} />
 				<Route path="SignIn" element={<SignIn />} />
 				{/** to edit the routes to become  */}
-				<Route element={<Authentication />}>
 					<Route path="Student/:username" element={<UserLayout />}>
 						<Route index element={<Student />} />
 					</Route>
 					<Route path="Publisher/:username" element={<UserLayout />}>
 						<Route index element={<Publisher />} />
+					</Route>
+					<Route path="Admin/:username" element={<UserLayout />}>
+						<Route index element={<Admin />} />
 					</Route>
 					<Route path="Channels/:id" element={<Channels />}>
 						<Route path="HomeWork/:id1" element={<HomeWork />} />
@@ -62,6 +65,7 @@ function App() {
 						}
 					/>
           <Route path="/create-channels/" element={<><ChannelLayout/><CreateChannel/></>} />
+		  <Route element={<Authentication />}>
 				</Route>
 			</>
 		)

@@ -6,6 +6,8 @@ const Discussion = (props) => {
 	const [Comments, setComments] = useState("");
 	const [addcomment, setaddcomment] = useState(false);
 	const [errors, seterrors] = useState([]);
+	const[data,setdata]=useState([])
+	const {id}=useParams();
 	const HandleSubmit = (e) => {
 		e.preventDefault();
 		const errors = {};
@@ -15,19 +17,31 @@ const Discussion = (props) => {
 			console.log({ Comments });
 		}
 	};
+	useEffect(() => {
+		axios
+				.get(`http://127.0.0.1:8000/chn/content/discussions/${id}`, {
+					"token": sessionStorage.getItem("token"),
+					"channel_id": id,
+				})
+				.then((response) => {
+					setdata(response.data);
+					console.log(response.data);
+				})
+				.catch((error) => console.log(error));
+	},[]);
 	return (
 		<div className="border-4 rounded-lg bg-[#f5f5f5] text-[#333] px-4 ">
 			<nav className="flex flex-row py-4 items-center">
-				<h3 className=" text-md font-extralight mx-2">{props.Author}</h3>
-				<h3 className=" text-md font-extralight mx-2">{props.Date}</h3>
+				<h3 className=" text-md font-extralight mx-2">{data["Author"]}</h3>
+				<h3 className=" text-md font-extralight mx-2">{data["Date"]}</h3>
 			</nav>
 			<hr className="border-1 border-[#333]" />
 			<main>
-				<h1 className="text-3xl font-bold px-8 py-4">{props.Title}</h1>
+				<h1 className="text-3xl font-bold px-8 py-4">{data["Title"]}</h1>
 				<div>
                     <h1 className="text-3xl font-semibold px-8 py-1">Related Articles:</h1>
                     <br />
-					{props.Articles.map((Article, index) => (
+					{data["Articles"].map((Article, index) => (
 						<div key={index} className=" inline-block font-medium mx-3 px-6 py-1">
 							{Article}
 						</div>
@@ -35,11 +49,11 @@ const Discussion = (props) => {
                     <span></span>
 				</div>
 
-                <p className="text-justify py-4 px-8">{props.text}</p>
+                <p className="text-justify py-4 px-8">{data["text"]}</p>
 			</main>
 			<footer>
 				<div className="flex flex-row justify-around mb-3">
-					<h3>Comments:{props.Comments}</h3>
+					<h3>Comments:{data["Comments"]}</h3>
 				</div>
 				<div className="flex flex-row justify-around">
 				<button
@@ -54,73 +68,17 @@ const Discussion = (props) => {
 					className={classNames("flex flex-col items-start mt-4", {
 						hidden: !showComments,
 					})}>
-					<Comment
-						Author={"Ahmed Mostafa"}
-						text={`И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе, сам за себя
-Я как Томас Шелби, но с грустью так и шёл бы
-И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе я
-
-[Куплет 1]
-Я останусь собой, нет, я не стану другим
-Неважно, сколько мне лет, пойми, внутри я погиб
-Перепутали пути с тобой, родная
-Внутри меня идёт война, fire-fire
-Пойми, что мы с тобою в эпицентре войны
-Вместе, но одни, над моею головою дуло пистолета
-Сегодня есть я, а завтра нету
-
-[Припев]
-Я как Томас Шелби всё с грустью так же шёл бы
-И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе, сам за себя
-Я как Томас Шелби, но с грустью так и шёл бы
-И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе я
-You might also like
-Вахтерам (Vahteram)
-Бумбокс (Bumboks)
-На Титанике (On the Titanic)
-INSTASAMKA & Лолита (Lolita)
-Lo Siento
-Big Baby Tape
-[Куплет 2]
-А ты так мило смотришь на меня
-Заворожила меня своим голосом
-Как жаль, что ты ядовитая змея
-Но ты разбила сердце Томасу
-Перепутали пути с тобой, родная
-Скажи мне: «Fire-fire». Но в меня стреляют
-Убегай, уходи, между нами дожди
-Я останусь один и снова
-
-[Припев]
-Я как Томас Шелби всё с грустью так же шёл бы
-И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе, сам за себя
-Я как Томас Шелби, но с грустью так и шёл бы
-И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе я
-
-[Аутро]
-Я как Томас Шелби всё с грустью так же шёл бы
-И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе, сам за себя
-Я как Томас Шелби, но с грустью так и шёл бы
-И пусть меня никто не нашёл бы
-Клянусь, мне так плевать на твои слова
-Сам по себе я`}
-					/>
-					<Comment Author={"new_pro125"} text={"FUCK,SOCIETY ;<"} />
 					{/**here comes the comments section */}
+					{data["Comments"].map((comment, index) => {
+						return (
+							<Comment
+								key={index}
+								Author={comment["Author"]}
+								Date={comment["Date"]}
+								text={comment["text"]}
+							/>
+						);
+					})}
 					<div>
 						<form onSubmit={HandleSubmit}>
 							<div className="mb-4">

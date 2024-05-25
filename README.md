@@ -15,3 +15,17 @@ educational experience.
 • Admin
 • Publisher
 • Student.
+#### Admin endpoints 👮‍♂️
+![image](https://github.com/ahmed-kamal2004/3702_Platform/assets/98265644/bff5b4b3-e024-4014-97e6-db35691a46cb)
+#### Channel endpoints 🎤
+![image](https://github.com/ahmed-kamal2004/3702_Platform/assets/98265644/7ba1b9b2-bf88-4cc9-b005-4d2632aece98)
+#### Student endpoints 🧑‍🎓
+![image](https://github.com/ahmed-kamal2004/3702_Platform/assets/98265644/eb4e7fcd-b116-4034-b9c1-374aad65bae6)
+#### Authentication "Login" endpoints 🔎
+![image](https://github.com/ahmed-kamal2004/3702_Platform/assets/98265644/a8a4d11f-db13-4216-a27d-e4c3e0e6c2bf)
+#### Creator (Publisher) endpoints 📝
+![image](https://github.com/ahmed-kamal2004/3702_Platform/assets/98265644/dbb49d59-b5eb-413e-bfab-5222fc5a2072)
+
+
+
+
